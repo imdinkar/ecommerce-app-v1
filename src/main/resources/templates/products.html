@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Ecommerce App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .products-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin: 20px 0;
+        }
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        .product-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+            border-radius: 15px 15px 0 0;
+        }
+        .product-category {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00b894, #00a085);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .btn-add-cart {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-add-cart:hover {
+            background: linear-gradient(135deg, #00a085, #00b894);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+            color: white;
+        }
+        .filter-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        .category-filter {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            margin: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .category-filter:hover, .category-filter.active {
+            background: linear-gradient(135deg, #0984e3, #74b9ff);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.4);
+        }
+        .stock-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 184, 148, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .out-of-stock {
+            background: rgba(255, 107, 107, 0.9) !important;
+        }
+        .search-box {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 12px 20px;
+            font-size: 1rem;
+        }
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #2d3436, #636e72);">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-shopping-bag"></i> Ecommerce App</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+                <a class="nav-link active" href="/products"><i class="fas fa-box"></i> Products</a>
+                <a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i> Cart</a>
+                <a class="nav-link" href="/orders"><i class="fas fa-list"></i> My Orders</a>
+                <span th:if="${user}" class="navbar-text me-3">Welcome, <span th:text="${user.firstName}"></span>!</span>
+                <a th:if="${user}" class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a th:unless="${user}" class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Success/Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="products-container p-4">
+            <div class="text-center mb-4">
+                <h1 class="display-4 text-primary"><i class="fas fa-store"></i> Our Products</h1>
+                <p class="lead text-muted">Discover amazing products at great prices</p>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="filter-section">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control search-box border-start-0" 
+                                   placeholder="Search products..." id="searchInput">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="category-filter active" data-category="all">
+                            <i class="fas fa-th"></i> All
+                        </button>
+                        <button class="category-filter" data-category="Electronics">
+                            <i class="fas fa-laptop"></i> Electronics
+                        </button>
+                        <button class="category-filter" data-category="Clothing">
+                            <i class="fas fa-tshirt"></i> Clothing
+                        </button>
+                        <button class="category-filter" data-category="Books">
+                            <i class="fas fa-book"></i> Books
+                        </button>
+                        <button class="category-filter" data-category="Home">
+                            <i class="fas fa-home"></i> Home
+                        </button>
+                        <button class="category-filter" data-category="Sports">
+                            <i class="fas fa-dumbbell"></i> Sports
+                        </button>
+                        <button class="category-filter" data-category="Beauty">
+                            <i class="fas fa-heart"></i> Beauty
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="row" id="productsGrid">
+                <div th:each="product : ${products}" class="col-lg-3 col-md-4 col-sm-6 mb-4 product-item" 
+                     th:data-category="${product.category}" th:data-name="${product.name}">
+                    <div class="card product-card">
+                        <div class="position-relative">
+                            <img th:src="${product.imageUrl}" 
+                                 class="product-image" th:alt="${product.name}"
+                                 onerror="this.onerror=null; this.src='/images/placeholder/300x300?color=' + getRandomColor() + '&text=' + encodeURIComponent(this.alt);">
+                            <div class="stock-badge" th:classappend="${product.stockQuantity <= 0} ? 'out-of-stock' : ''">
+                                <span th:if="${product.stockQuantity > 0}">
+                                    <i class="fas fa-check"></i> In Stock (<span th:text="${product.stockQuantity}"></span>)
+                                </span>
+                                <span th:if="${product.stockQuantity <= 0}">
+                                    <i class="fas fa-times"></i> Out of Stock
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-2">
+                                <span class="product-category" th:text="${product.category}"></span>
+                            </div>
+                            <h5 class="card-title mb-2" th:text="${product.name}"></h5>
+                            <p class="card-text text-muted flex-grow-1" th:text="${product.description}"></p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <div class="product-price">
+                                    $<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span>
+                                </div>
+                                <form th:action="@{/cart/add}" method="post" class="d-inline">
+                                    <input type="hidden" name="productId" th:value="${product.id}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-add-cart" 
+                                            th:disabled="${product.stockQuantity <= 0}">
+                                        <i class="fas fa-cart-plus"></i> 
+                                        <span th:if="${product.stockQuantity > 0}">Add to Cart</span>
+                                        <span th:if="${product.stockQuantity <= 0}">Sold Out</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Products Found Message -->
+            <div id="noProductsMessage" class="text-center py-5" style="display: none;">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No products found</h4>
+                <p class="text-muted">Try adjusting your search or filter criteria</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            filterProducts();
+        });
+
+        // Category filter functionality
+        document.querySelectorAll('.category-filter').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.category-filter').forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                filterProducts();
+            });
+        });
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const activeCategory = document.querySelector('.category-filter.active').dataset.category;
+            const products = document.querySelectorAll('.product-item');
+            let visibleCount = 0;
+
+            products.forEach(product => {
+                const productName = product.dataset.name.toLowerCase();
+                const productCategory = product.dataset.category;
+                
+                const matchesSearch = productName.includes(searchTerm);
+                const matchesCategory = activeCategory === 'all' || productCategory === activeCategory;
+                
+                if (matchesSearch && matchesCategory) {
+                    product.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+
+            // Show/hide no products message
+            const noProductsMessage = document.getElementById('noProductsMessage');
+            if (visibleCount === 0) {
+                noProductsMessage.style.display = 'block';
+            } else {
+                noProductsMessage.style.display = 'none';
+            }
+        }
+
+        // Add to cart animation
+        document.querySelectorAll('.btn-add-cart').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.disabled) {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-check"></i> Added!';
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+                        }, 1000);
+                    }, 500);
+                }
+            });
+        });
+
+        // Generate random color for fallback images
+        function getRandomColor() {
+            const colors = ['FF6B6B', '4ECDC4', '45B7D1', 'F9CA24', '6C5CE7', 'A29BFE', 'FD79A8', 'FDCB6E', 'E17055', '00B894'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Image loading enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.product-image');
+            images.forEach(img => {
+                img.addEventListener('error', function() {
+                    if (!this.dataset.fallbackAttempted) {
+                        this.dataset.fallbackAttempted = 'true';
+                        const productName = this.alt;
+                        const color = getRandomColor();
+                        this.src = `https://via.placeholder.com/300x200/${color}/FFFFFF?text=${encodeURIComponent(productName)}`;
+                    }
+                });
+                
+                // Add loading animation
+                img.addEventListener('load', function() {
+                    this.style.opacity = '1';
+                });
+                
+                img.style.opacity = '0.7';
+                img.style.transition = 'opacity 0.3s ease';
+            });
+        });
+    </script>
+
+    <!-- Disclaimer Footer -->
+    <footer class="disclaimer-footer mt-5 py-4" style="background: linear-gradient(135deg, #2d3436, #636e72); color: white; border-top: 3px solid #ddd;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle text-warning me-3" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <h6 class="mb-1 text-warning">⚠️ Educational Purpose Only</h6>
+                            <p class="mb-0 small opacity-75">
+                                <strong>This application is for learning purposes only, not to be used in production.</strong>
+                                This demo application is designed for educational purposes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <small class="opacity-50">
+                        <i class="fas fa-graduation-cap me-1"></i>
+                        Demo Application © 2025
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

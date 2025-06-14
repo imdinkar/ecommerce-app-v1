@@ -1,0 +1,154 @@
+-- Create tables and populate with sample data
+USE ecommerce_db;
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create products table
+CREATE TABLE IF NOT EXISTS products (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    stock_quantity INT DEFAULT 0,
+    category VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create orders table
+CREATE TABLE IF NOT EXISTS orders (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT,
+    total_amount DECIMAL(10,2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Create order_items table
+CREATE TABLE IF NOT EXISTS order_items (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT,
+    product_id BIGINT,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- Insert 100 sample users
+INSERT INTO users (username, email, password, first_name, last_name) VALUES
+('user1', 'user1@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFVMLVZqpjBWNOx0wYaLHbG', 'John', 'Doe'),
+('user2', 'user2@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFVMLVZqpjBWNOx0wYaLHbG', 'Jane', 'Smith'),
+('user3', 'user3@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFVMLVZqpjBWNOx0wYaLHbG', 'Bob', 'Johnson'),
+('user4', 'user4@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFVMLVZqpjBWNOx0wYaLHbG', 'Alice', 'Brown'),
+('user5', 'user5@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFVMLVZqpjBWNOx0wYaLHbG', 'Charlie', 'Wilson');
+
+-- Insert more users (simplified for brevity - in real scenario you'd have 100)
+INSERT INTO users (username, email, password, first_name, last_name) 
+SELECT 
+    CONCAT('user', n.num) as username,
+    CONCAT('user', n.num, '@example.com') as email,
+    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFVMLVZqpjBWNOx0wYaLHbG' as password,
+    CONCAT('FirstName', n.num) as first_name,
+    CONCAT('LastName', n.num) as last_name
+FROM (
+    SELECT 6 as num UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION
+    SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 UNION
+    SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19 UNION SELECT 20 UNION
+    SELECT 21 UNION SELECT 22 UNION SELECT 23 UNION SELECT 24 UNION SELECT 25 UNION
+    SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29 UNION SELECT 30 UNION
+    SELECT 31 UNION SELECT 32 UNION SELECT 33 UNION SELECT 34 UNION SELECT 35 UNION
+    SELECT 36 UNION SELECT 37 UNION SELECT 38 UNION SELECT 39 UNION SELECT 40 UNION
+    SELECT 41 UNION SELECT 42 UNION SELECT 43 UNION SELECT 44 UNION SELECT 45 UNION
+    SELECT 46 UNION SELECT 47 UNION SELECT 48 UNION SELECT 49 UNION SELECT 50 UNION
+    SELECT 51 UNION SELECT 52 UNION SELECT 53 UNION SELECT 54 UNION SELECT 55 UNION
+    SELECT 56 UNION SELECT 57 UNION SELECT 58 UNION SELECT 59 UNION SELECT 60 UNION
+    SELECT 61 UNION SELECT 62 UNION SELECT 63 UNION SELECT 64 UNION SELECT 65 UNION
+    SELECT 66 UNION SELECT 67 UNION SELECT 68 UNION SELECT 69 UNION SELECT 70 UNION
+    SELECT 71 UNION SELECT 72 UNION SELECT 73 UNION SELECT 74 UNION SELECT 75 UNION
+    SELECT 76 UNION SELECT 77 UNION SELECT 78 UNION SELECT 79 UNION SELECT 80 UNION
+    SELECT 81 UNION SELECT 82 UNION SELECT 83 UNION SELECT 84 UNION SELECT 85 UNION
+    SELECT 86 UNION SELECT 87 UNION SELECT 88 UNION SELECT 89 UNION SELECT 90 UNION
+    SELECT 91 UNION SELECT 92 UNION SELECT 93 UNION SELECT 94 UNION SELECT 95 UNION
+    SELECT 96 UNION SELECT 97 UNION SELECT 98 UNION SELECT 99 UNION SELECT 100
+) n;
+
+-- Insert 100 sample products
+INSERT INTO products (name, description, price, stock_quantity, category) VALUES
+('Laptop Pro 15', 'High-performance laptop with 16GB RAM', 1299.99, 50, 'Electronics'),
+('Wireless Mouse', 'Ergonomic wireless mouse with long battery life', 29.99, 200, 'Electronics'),
+('Coffee Maker', 'Automatic drip coffee maker with timer', 89.99, 75, 'Appliances'),
+('Running Shoes', 'Comfortable running shoes for daily exercise', 79.99, 120, 'Sports'),
+('Smartphone X', 'Latest smartphone with advanced camera', 899.99, 80, 'Electronics');
+
+-- Insert more products using similar pattern
+INSERT INTO products (name, description, price, stock_quantity, category) 
+SELECT 
+    CONCAT('Product ', n.num) as name,
+    CONCAT('Description for product ', n.num) as description,
+    ROUND(RAND() * 1000 + 10, 2) as price,
+    FLOOR(RAND() * 200 + 10) as stock_quantity,
+    CASE 
+        WHEN n.num % 5 = 0 THEN 'Electronics'
+        WHEN n.num % 5 = 1 THEN 'Clothing'
+        WHEN n.num % 5 = 2 THEN 'Home'
+        WHEN n.num % 5 = 3 THEN 'Sports'
+        ELSE 'Books'
+    END as category
+FROM (
+    SELECT 6 as num UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION
+    SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 UNION
+    SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19 UNION SELECT 20 UNION
+    SELECT 21 UNION SELECT 22 UNION SELECT 23 UNION SELECT 24 UNION SELECT 25 UNION
+    SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29 UNION SELECT 30 UNION
+    SELECT 31 UNION SELECT 32 UNION SELECT 33 UNION SELECT 34 UNION SELECT 35 UNION
+    SELECT 36 UNION SELECT 37 UNION SELECT 38 UNION SELECT 39 UNION SELECT 40 UNION
+    SELECT 41 UNION SELECT 42 UNION SELECT 43 UNION SELECT 44 UNION SELECT 45 UNION
+    SELECT 46 UNION SELECT 47 UNION SELECT 48 UNION SELECT 49 UNION SELECT 50 UNION
+    SELECT 51 UNION SELECT 52 UNION SELECT 53 UNION SELECT 54 UNION SELECT 55 UNION
+    SELECT 56 UNION SELECT 57 UNION SELECT 58 UNION SELECT 59 UNION SELECT 60 UNION
+    SELECT 61 UNION SELECT 62 UNION SELECT 63 UNION SELECT 64 UNION SELECT 65 UNION
+    SELECT 66 UNION SELECT 67 UNION SELECT 68 UNION SELECT 69 UNION SELECT 70 UNION
+    SELECT 71 UNION SELECT 72 UNION SELECT 73 UNION SELECT 74 UNION SELECT 75 UNION
+    SELECT 76 UNION SELECT 77 UNION SELECT 78 UNION SELECT 79 UNION SELECT 80 UNION
+    SELECT 81 UNION SELECT 82 UNION SELECT 83 UNION SELECT 84 UNION SELECT 85 UNION
+    SELECT 86 UNION SELECT 87 UNION SELECT 88 UNION SELECT 89 UNION SELECT 90 UNION
+    SELECT 91 UNION SELECT 92 UNION SELECT 93 UNION SELECT 94 UNION SELECT 95 UNION
+    SELECT 96 UNION SELECT 97 UNION SELECT 98 UNION SELECT 99 UNION SELECT 100
+) n;
+
+-- Insert sample orders
+INSERT INTO orders (user_id, total_amount, status) VALUES
+(1, 1329.98, 'COMPLETED'),
+(2, 89.99, 'PENDING'),
+(3, 79.99, 'SHIPPED'),
+(4, 929.98, 'COMPLETED'),
+(5, 29.99, 'PENDING');
+
+-- Insert order items
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES
+(1, 1, 1, 1299.99),
+(1, 2, 1, 29.99),
+(2, 3, 1, 89.99),
+(3, 4, 1, 79.99),
+(4, 1, 1, 1299.99),
+(4, 5, 1, 899.99),
+(5, 2, 1, 29.99);
+
+-- Show counts
+SELECT 'Users' as table_name, COUNT(*) as count FROM users
+UNION ALL
+SELECT 'Products' as table_name, COUNT(*) as count FROM products
+UNION ALL
+SELECT 'Orders' as table_name, COUNT(*) as count FROM orders
+UNION ALL
+SELECT 'Order Items' as table_name, COUNT(*) as count FROM order_items;
