@@ -111,14 +111,14 @@ After successful setup, access the application at:
 | **Database** | MySQL | 8.0+ |
 | **Frontend** | Thymeleaf + Bootstrap 5 | Latest |
 | **Build Tool** | Maven | 3.6+ |
-| **Java** | JDK | 11+ |
+| **Java** | JDK | 8+ |
 | **Styling** | Bootstrap + Custom CSS | 5.1.3 |
 | **Icons** | Font Awesome | 6.0 |
 
 ## 📋 Prerequisites
 
 ### Required Software
-- **Java Development Kit (JDK)**: 11 or higher
+- **Java Development Kit (JDK)**: 8 or higher
 - **Apache Maven**: 3.6.0 or higher
 - **MySQL Database Server**: 8.0 or higher
 

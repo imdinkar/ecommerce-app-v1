@@ -58,7 +58,7 @@ Open `installation-guide/INSTALLATION_GUIDE.html` in a web browser for complete 
 ## 📋 Prerequisites for Recipients
 
 ### Required Software
-- **Java JDK 11+** - [Download here](https://www.oracle.com/java/technologies/downloads/)
+- **Java JDK 8+** - [Download here](https://www.oracle.com/java/technologies/downloads/)
 - **Apache Maven 3.6+** - [Download here](https://maven.apache.org/download.cgi)
 - **MySQL 8.0+** - [Download here](https://dev.mysql.com/downloads/mysql/)
 

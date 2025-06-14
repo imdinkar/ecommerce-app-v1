@@ -29,7 +29,7 @@ This is a Spring Boot-based e-commerce application designed for educational purp
 ### Required Software
 
 1. **Java Development Kit (JDK)**
-   - Version: JDK 11 or higher
+   - Version: JDK 8 or higher
    - Download: [Oracle JDK](https://www.oracle.com/java/technologies/downloads/) or [OpenJDK](https://openjdk.org/)
 
 2. **Apache Maven**
@@ -48,10 +48,10 @@ This is a Spring Boot-based e-commerce application designed for educational purp
 1. **Set JAVA_HOME environment variable**
    ```bash
    # Windows
-   set JAVA_HOME=C:\Program Files\Java\jdk-11.0.x
+   set JAVA_HOME=C:\Program Files\Java\jdk-1.8.x
    
    # Linux/Mac
-   export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+   export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
    ```
 
 2. **Add Maven to PATH**
@@ -461,7 +461,7 @@ mvn clean install -DskipTests
 **Error**: `UnsupportedClassVersionError`
 
 **Solution**:
-- Ensure JDK 11+ is installed
+- Ensure JDK 8+ is installed
 - Verify JAVA_HOME points to correct JDK
 - Check Maven is using correct Java version: `mvn -version`
 

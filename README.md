@@ -9,7 +9,7 @@ A comprehensive Spring Boot-based e-commerce application designed for educationa
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Java 11+
+- Java 8+
 - Maven 3.6+
 - MySQL 8.0+
 
@@ -80,7 +80,7 @@ For detailed installation instructions, see [installation-guide/INSTALLATION_GUI
 - **Frontend**: Thymeleaf, Bootstrap 5, JavaScript
 - **Database**: MySQL
 - **Build Tool**: Maven
-- **Java Version**: 11+
+- **Java Version**: 8+
 
 ## 📁 Project Structure
 
